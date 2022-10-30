@@ -15,7 +15,7 @@
 #include <exception>
 #include <string>
 
-class WrongParametersFormat :std::exception {
+class WrongParametersFormat : std::exception {
 private:
     const char* message;
 

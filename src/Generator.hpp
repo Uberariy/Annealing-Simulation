@@ -16,7 +16,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "exception.hpp"
+#include "Exception.hpp"
 
 /**
  * @brief Format is:
@@ -52,6 +52,7 @@ void generate_test_uniform(std::string path, unsigned long procN, unsigned long 
             of << i << "," << distrib(gen) << "\n";
         }
     }
+    of.close();
 }
 
 #endif
