@@ -38,7 +38,7 @@ public:
         MyMutation<Schedule> mutation;
 
         while (boredom_current < boredom_constraint) {
-            current_schedule = best_schedule; // Modification
+            // current_schedule = best_schedule; // Modification
             iter_current++;
             for (int i = 0; i < iterations; i++) {
                 boredom_current++;

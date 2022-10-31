@@ -32,7 +32,7 @@ private:
 class Schedule : Task_Solution {
 public:
     // Schedule(unsigned long procN_, const std::unordered_map<unsigned long, unsigned long> &time_dict_);
-    Schedule(std::string path);
+    Schedule(std::string path, bool random);
     unsigned long long get_criterion(); // Less => better
     unsigned long long get_procN() const;
     unsigned long long get_workN() const;
@@ -49,7 +49,7 @@ private:
 // Schedule::Schedule(unsigned long procN_, const std::unordered_map<unsigned long, unsigned long> &time_dict_) : 
 //     procN(procN_), time_dict(time_dict_) {}
 
-Schedule::Schedule(std::string path) {
+Schedule::Schedule(std::string path, bool random = true) {
     /* Read from csv file*/
 
     std::stringstream ss;
@@ -90,7 +90,11 @@ Schedule::Schedule(std::string path) {
             // std::cerr << reader << "|";
             // time_dict[i] = std::stoul(reader);
             // unsigned long proc = distrib(gen);
-            proc_tasks[distrib(gen)].push_back(i);
+            if (random) {
+                proc_tasks[distrib(gen)].push_back(i);
+            } else {
+                proc_tasks[0].push_back(i);
+            }
             // std::cerr << i << "\t" << time_dict[i] << "\n";
         }
     }
@@ -176,18 +180,28 @@ public:
                 }
             }
             unsigned long target_proc;
-            while (true) {
-                target_proc = proc_distrib(gen);
-                if (schedule.proc_tasks[target_proc].size() > 0) {
-                    break;
+            // while (true) {
+            target_proc = proc_distrib(gen);
+            if (schedule.proc_tasks[target_proc].size() == 0) {
+                schedule.proc_tasks[target_proc].push_back(moving_work);
+            } else {
+                std::uniform_int_distribution<> proc_work_distrib(0, schedule.proc_tasks[target_proc].size());
+                unsigned long target_proc_work = proc_work_distrib(gen);
+                // std::cerr << "p" << target_proc_work << "p";
+                if (schedule.proc_tasks[target_proc].size() == target_proc_work) {
+                    schedule.proc_tasks[target_proc].push_back(moving_work);
                 }
+                // std::cerr << "p" << target_proc_work << "p";
+                schedule.proc_tasks[target_proc].push_back(schedule.proc_tasks[target_proc][target_proc_work]);
+                schedule.proc_tasks[target_proc][target_proc_work] = moving_work;
             }
+            // }
             // unsigned long target_proc = proc_distrib(gen);
-            std::uniform_int_distribution<> proc_work_distrib(0, schedule.proc_tasks[target_proc].size() - 1);
-            unsigned long target_proc_work = proc_work_distrib(gen);
-            // std::cerr << "p" << target_proc_work << "p";
-            schedule.proc_tasks[target_proc].push_back(schedule.proc_tasks[target_proc][target_proc_work]);
-            schedule.proc_tasks[target_proc][target_proc_work] = moving_work;
+            // std::uniform_int_distribution<> proc_work_distrib(0, schedule.proc_tasks[target_proc].size() - 1);
+            // unsigned long target_proc_work = proc_work_distrib(gen);
+            // // std::cerr << "p" << target_proc_work << "p";
+            // schedule.proc_tasks[target_proc].push_back(schedule.proc_tasks[target_proc][target_proc_work]);
+            // schedule.proc_tasks[target_proc][target_proc_work] = moving_work;
         }
         // std::cout << "|" << schedule.get_criterion() << "|";
 
