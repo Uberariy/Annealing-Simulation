@@ -18,7 +18,8 @@
 #include "../src/Annealing.hpp"
 
 int main(int argc, char *argv[]) {
-    if ((argc > 2) || !std::strcmp(argv[1], "-h") || !std::strcmp(argv[1], "--help")) {
+    std::cerr << argc;
+    if ((argc == 1) || (argc > 2) || !std::strcmp(argv[1], "-h") || !std::strcmp(argv[1], "--help")) {
         std::cerr << "Run program with argument P - for parallel and C for consequtive.\n";
         return 1;
     } else if (!std::strcmp(argv[1], "C")) {
@@ -59,6 +60,8 @@ int main(int argc, char *argv[]) {
                 generate_test_uniform("../input_example/test1.csv", processors, works, 5, 25);
 
                 Schedule StartSchedule("../input_example/test1.csv", false);
+
+                std::cout << StartSchedule.get_criterion();
 
                 auto t_start = std::chrono::high_resolution_clock::now();
 
