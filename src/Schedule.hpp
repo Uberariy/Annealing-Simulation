@@ -151,59 +151,31 @@ public:
         std::uniform_int_distribution<> work_distrib(1, schedule.get_workN());
         std::uniform_int_distribution<> proc_distrib(0, schedule.get_procN() - 1);
 
-        /* Rearrange 10% of works */
+        /* Rearrange 0.5% of works */
 
-        for (unsigned long i = 1; i <= schedule.get_workN() / 10; i++) {
+        for (unsigned long i = 1; i <= schedule.get_workN() / 200; i++) {
             unsigned long moving_work = work_distrib(gen);
-            // std::cerr << "p" << moving_work << "p";
             for (unsigned long j = 0; j < schedule.get_procN(); j++) {
-                // if (std::find(schedule.proc_tasks[j].begin(), schedule.proc_tasks[j].end(), moving_work) != schedule.proc_tasks[j].end()) {
-                //     auto it = schedule.proc_tasks[j].begin();
-                //     while (it != schedule.proc_tasks[j].end()) {
-                //         if (*it == moving_work) {
-                //             it = schedule.proc_tasks[j].erase(it);
-                //             break;
-                //         }
-                //         else {
-                //             ++it;
-                //         }
-                //     }
-                // }
                 if (std::find(schedule.proc_tasks[j].begin(), schedule.proc_tasks[j].end(), moving_work) != schedule.proc_tasks[j].end()) {
                     remove(schedule.proc_tasks[j].begin(), schedule.proc_tasks[j].end(), moving_work);
                     schedule.proc_tasks[j].pop_back();
-                    // if (std::find(schedule.proc_tasks[j].begin(), schedule.proc_tasks[j].end(), moving_work) != schedule.proc_tasks[j].end()) {
-                    //     std::cerr << "POINT";
-                    // }
-                    // std::cerr << "POINT";
                     break;
                 }
             }
             unsigned long target_proc;
-            // while (true) {
             target_proc = proc_distrib(gen);
             if (schedule.proc_tasks[target_proc].size() == 0) {
                 schedule.proc_tasks[target_proc].push_back(moving_work);
             } else {
                 std::uniform_int_distribution<> proc_work_distrib(0, schedule.proc_tasks[target_proc].size());
                 unsigned long target_proc_work = proc_work_distrib(gen);
-                // std::cerr << "p" << target_proc_work << "p";
                 if (schedule.proc_tasks[target_proc].size() == target_proc_work) {
                     schedule.proc_tasks[target_proc].push_back(moving_work);
                 }
-                // std::cerr << "p" << target_proc_work << "p";
                 schedule.proc_tasks[target_proc].push_back(schedule.proc_tasks[target_proc][target_proc_work]);
                 schedule.proc_tasks[target_proc][target_proc_work] = moving_work;
             }
-            // }
-            // unsigned long target_proc = proc_distrib(gen);
-            // std::uniform_int_distribution<> proc_work_distrib(0, schedule.proc_tasks[target_proc].size() - 1);
-            // unsigned long target_proc_work = proc_work_distrib(gen);
-            // // std::cerr << "p" << target_proc_work << "p";
-            // schedule.proc_tasks[target_proc].push_back(schedule.proc_tasks[target_proc][target_proc_work]);
-            // schedule.proc_tasks[target_proc][target_proc_work] = moving_work;
         }
-        // std::cout << "|" << schedule.get_criterion() << "|";
 
         return schedule;
     }
